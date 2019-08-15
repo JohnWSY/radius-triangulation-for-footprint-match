@@ -231,15 +231,8 @@ class GetFeatureVec(object):
         return(feature_vec_match)
 
 
-# 这里要定义一个方法，得到全局的特征向量用于归一化，输入为所有csv文件的根目录，最后输出max, min
-def featurevec_overall(root_directory):
-    path = glob(root_directory+'\\*')
-    csv_list=[]
-    for ind in range(len(path)):
-        csv_path = glob(path[ind]+'\\*.csv')
-        # 生成csv文件路径list
-        _csv_list = [csv_path[i] for i in range(len(csv_path))]
-        csv_list+=_csv_list
+# 这里要定义一个方法，得到全局的特征向量用于归一化，输入为所有csv文件列表，最后输出max, min
+def featurevec_overall(csv_list):
     res = list(map(feature_vec_common, csv_list))
     # 只有一个特征点的
     l1=[]
@@ -266,9 +259,22 @@ def featurevec_overall(root_directory):
     return max,min
 
 
+# 归一化
+def normalize(matrix, max, min):
+
+    delta = max -min
+    if len(matrix) == 1:
+        matrix_normalize = (matrix[:, 0]-min[:, 0]) / delta[:, 0]
+    elif len(matrix) == 2:
+        matrix_normalize = (matrix[:, :-1]-min[:, :-1])/delta[:, :-1]
+    else:
+        matrix_normalize = (matrix - min) / delta
+
+    return matrix_normalize
+
 # 其实同源鞋印的距离，传入的参数应该是向量而不是csv文件
 def feature_distance(csv1, csv2, max, min):
-    # sample_file是文件夹名，而json1是json文件名
+
     mat = loadmat(re.sub(r'[0-9a-zA-Z]+.csv', r'transformation.mat', csv1))
     refer_path = re.sub(r'[0-9a-zA-Z]+.csv', '', csv1)+mat['trans'][0][0][0].replace('.jpg', '.csv')
     # 判断哪个是基准图，哪个是配准图
@@ -279,38 +285,17 @@ def feature_distance(csv1, csv2, max, min):
     feature_vec_reference = GetFeatureVec(refer_path).feature_vec_refer()
     feature_vec_match =  GetFeatureVec(match_path).feature_vec_match()
 
-
-
-
-    # 首先进行归一化
-    delta=max-min
-    # 仅有一个特征时，只有特征方向
-    if len(feature_vec_match) == 1 & len(feature_vec_reference) == 1:
-        fvr_norm = (feature_vec_reference[:, 0]-min[:, 0]) / delta[:, 0]
-        fvm_norm = (feature_vec_match[:, 0]-min[:, 0]) / delta[:, 0]
-    # 仅有两个特征时，无法计算特征向量的最后一项——三角形面积
-    elif len(feature_vec_match) == 2 & len(feature_vec_reference) == 2:
-        fvr_norm = (feature_vec_reference[:, :-1]-min[:, :-1])/delta[:, :-1]
-        fvm_norm = (feature_vec_match[:, :-1]-min[:, :-1])/delta[:, :-1]
-    else:
-        fvr_norm = (feature_vec_reference-min)/delta
-        fvm_norm = (feature_vec_match-min)/delta
-
-    # 这一步若两个json文件特征个数不相等无法计算
-    distance = np.sqrt(np.sum(pow(fvr_norm-fvm_norm, 2)))
+    # 这一步若两个特征个数不相等无法计算
+    distance = np.sqrt(np.sum(pow(normalize(feature_vec_reference, max, min)-normalize(feature_vec_match, max, min), 2)))
 
     return distance
 
 # 计算非同源鞋印距离的方法
 def feature_distance_common(feature_mat1, feature_mat2, max, min):
 
-    # 首先进行归一化
-    delta=max-min
 
-    fvr_norm = (feature_mat1)/delta
-    fvm_norm = (feature_mat2)/delta
     # 计算欧氏距离，是否有其他距离的算法增加，可以对比效果
-    distance = np.sqrt(np.sum(pow(fvr_norm-fvm_norm, 2)))
+    distance = np.sqrt(np.sum(pow(normalize(feature_mat1, max, min)-normalize(feature_mat2, max ,min), 2)))
 
     return distance
 
@@ -318,126 +303,126 @@ def feature_distance_common(feature_mat1, feature_mat2, max, min):
 
 if __name__ == '__main__':
     colum_n = 4  # 特征向量包含的参数个数
-    choice_times = 5    # 非同源随机选取的次数
-    # # 这里同源的数据多了一级目录
-    # path='F:\\footprint\same source'
-    # file_path = glob(path+'\\*')
-    # # 这里将全局特征向量的最大最小值保存下来
-    # result = featurevec_overall(path)
-    # max_s = result[0]
-    # min_s = result[1]
-    # #
-    # # 同源的数据比较
-    # distance_isogeny_count=[]
-    # for ind in range(len(file_path)):
-    #     # 左脚
-    #     csv_path_L = glob(file_path[ind]+'\\L*.csv')
-    #     # 右脚
-    #     csv_path_R = glob(file_path[ind]+'\\R*.csv')
+    # 这里同源的数据多了一级目录
+    same_source_path=glob('F:\足迹\\footprint\same source\*\*')
+    csv_list = []
+    for p in same_source_path:
+        csv_path = glob(p+'\\*.csv')
+        # 生成csv文件路径list
+        _csv_list = [csv_path[i] for i in range(len(csv_path))]
+        csv_list += _csv_list
+    # 这里将全局特征向量的最大最小值保存下来
+    result1 = featurevec_overall(csv_list)
+    max_s = result1[0]
+    min_s = result1[1]
+    #
+    # 同源的数据比较
+    # 先从same_source中挑出所有L和R的分开
+    csv_path_L = []
+    csv_path_R = []
+    for each in same_source_path:
+        if 'L' in each:
+            csv_path_L.append(each)
+        else:
+            csv_path_R.append(each)
+    distance_isogeny_count=[]
+    end_list=[]
+    for ind in range(len(csv_path_L)):
+        # 生成csv文件路径list
+        csv_list_L = glob(csv_path_L[ind]+'\\L*.csv')
+        # 将左右脚枚举的同源数据放在一起
+        end_list.extend(combine(csv_list_L, 2))
+    for innd in range(len(csv_path_R)):
+        csv_list_R = glob(csv_path_R[innd]+'\\R*.csv')
+        end_list.extend(combine(csv_list_R, 2))
+    for i in range(len(end_list)):
+        try:
+            # 求出两个鞋印间的特征向量欧式距离
+            d = feature_distance(end_list[i][0], end_list[i][1], max_s, min_s)
+            distance_isogeny_count.append(d)
+            # 去掉仅有一个特征向量的情况，d=1
+        except Exception as e:
+            logging.exception(e)
+            # 此处数据准备过程中，有一文件人工删除了某一特征，所以无法计算
+            print(end_list[i]+'错误'+'i = %d' %i)
+    while 1.0 in distance_isogeny_count:
+        distance_isogeny_count.remove(1.0)
+    print(distance_isogeny_count)
+    print(len(distance_isogeny_count))
+
+    # # 非同源的数据比较
+    # distance_non_count=[]
+    # # 这里采用testV1.3的数据做非同源的计算
+    # different_source_file_path = glob('F:\足迹\\footprint\different source\*')
+    # # 这里计算所有非同源的数据最大最小值
+    # csv_list = []
+    # for p in different_source_file_path:
+    #     csv_path = glob(p + '\\*.csv')
     #     # 生成csv文件路径list
-    #     csv_list_L = [csv_path_L[i] for i in range(len(csv_path_L))]
-    #     csv_list_R = [csv_path_R[i] for i in range(len(csv_path_R))]
-    #     end_list = []
-    #     # 将左右脚枚举的同源数据放在一起
-    #     end_list.extend(combine(csv_list_L, 2))
-    #     end_list.extend(combine(csv_list_R, 2))
-    #     for i in range(len(end_list)):
-    #         try:
-    #             # 求出两个鞋印间的特征向量欧式距离
-    #             d = feature_distance(end_list[i][0], end_list[i][1], max_s, min_s)
-    #             distance_isogeny_count.append(d)
-    #             # 去掉仅有一个特征向量的情况，d=1
-    #         except Exception as e:
-    #             logging.exception(e)
-    #             # 此处数据准备过程中，有一文件人工删除了某一特征，所以无法计算
-    #             print(file_path[ind]+'错误'+'ind = %d' %ind)
-    # while 1.0 in distance_isogeny_count:
-    #     distance_isogeny_count.remove(1.0)
-    # print(distance_isogeny_count)
-    # print(len(distance_isogeny_count))
+    #     _csv_list = [csv_path[i] for i in range(len(csv_path))]
+    #     csv_list += _csv_list
+    # result2 = featurevec_overall(csv_list)
+    # max_d = result2[0]
+    # min_d = result2[1]
+    # # 得到所有两两组合的文件夹
+    # ds_file_L = combine(glob(different_source_file_path + '\\*\\L*.csv'), 2)
+    # ds_file_R = combine(glob(different_source_file_path + '\\*\\R*.csv'), 2)
+    # ds_file = ds_file_L + ds_file_R
+    #
+    # for i in range(len(ds_file)):
+    #     # 首先选出两个文件夹
+    #     file1, file2 = ds_file[i][0], ds_file[i][1]
+    #     feature_vec_s1 = feature_vec_common(file1)
+    #     feature_vec_s2 = feature_vec_common(file2)
+    #
+    #     # 选出两个特征向量包含的最少特征
+    #     l_s1 = len(feature_vec_s1)
+    #     l_s2 = len(feature_vec_s2)
+    #
+    #     if l_s1 == l_s2:
+    #         d = feature_distance_common(feature_vec_s1, feature_vec_s2, max_d, min_d)
+    #
+    #     elif l_s1 > l_s2:
+    #         l = [l_s1, l_s2]
+    #         l.sort()
+    #         l_min = l[0]
+    #         l_max = l[1]
+    #         # 在特征数多的特征向量中随机选取相应个特征
+    #         matrix = random_choice(l_max, l_min, choice_times=l_max)
+    #         m = enumnate_list(matrix)
+    #         fv_modify = np.zeros((l_min, colum_n))
+    #         d_combine = []
+    #         for l in m:
+    #             fv_modify = feature_vec_s1[l, :]
+    #             d = feature_distance_common(fv_modify, feature_vec_s2, max_d, min_d)
+    #             d_combine.append(d)
+    #         d_combine.sort()
+    #         d = d_combine[0]
+    #
+    #     elif l_s1 < l_s2:
+    #         l = [l_s1, l_s2]
+    #         l.sort()
+    #         l_min = l[0]
+    #         l_max = l[1]
+    #         # 在特征数多的特征向量中随机选取相应个特征，加扭转
+    #         matrix = random_choice(l_max, l_min, choice_times=l_max)
+    #         m = enumnate_list(matrix)
+    #         fv_modify = np.zeros((l_min, colum_n))
+    #         d_combine = []
+    #         for l in m:
+    #             fv_modify = feature_vec_s2[l, :]
+    #             d = feature_distance_common(fv_modify, feature_vec_s1, max_d, min_d)
+    #             d_combine.append(d)
+    #         d_combine.sort()
+    #         d=d_combine[0]
+    #     distance_non_count.append(d)
+    #
+    # # 删除只有一个特征向量的对比
+    # while 1.0 in distance_non_count:
+    #     distance_non_count.remove(1.0)
+    # print(distance_non_count)
+    # print(len(distance_non_count))
 
-    # 非同源的数据比较
-    distance_non_count=[]
-    # 这里采用testV1.3的数据做非同源的计算
-    different_source_file_path = 'F:\足迹\\footprint\different source'
-    # 这里计算所有非同源的数据最大最小值
-    result = featurevec_overall(different_source_file_path)
-    max_d = result[0]
-    min_d = result[1]
-    # 得到所有两两组合的文件夹
-    ds_file_L = combine(glob(different_source_file_path + '\\*\\L*.csv'), 2)
-    ds_file_R = combine(glob(different_source_file_path + '\\*\\R*.csv'), 2)
-    ds_file = ds_file_L + ds_file_R
-    # 从所有的非同源文件夹中选组
-    # sample_n = 50
-    # ds_list = random.sample(ds_file, sample_n)
-    for i in range(len(ds_file)):
-        # 首先选出两个文件夹
-        file1, file2 = ds_file[i][0], ds_file[i][1]
-        feature_vec_s1 = feature_vec_common(file1)
-        feature_vec_s2 = feature_vec_common(file2)
-
-        # 选出两个特征向量包含的最少特征
-        l_s1 = len(feature_vec_s1)
-        l_s2 = len(feature_vec_s2)
-
-        if l_s1 == l_s2:
-            d = feature_distance_common(feature_vec_s1, feature_vec_s2, max_d, min_d)
-
-        elif l_s1 > l_s2:
-            l = [l_s1, l_s2]
-            l.sort()
-            l_min = l[0]
-            l_max = l[1]
-            # 在特征数多的特征向量中随机选取相应个特征
-            matrix = random_choice(l_max, l_min, choice_times=choice_times)
-            m = enumnate_list(matrix)
-            fv_modify = np.zeros((l_min, colum_n))
-            d_combine = []
-            for l in m:
-                fv_modify = feature_vec_s1[l, :]
-                d = feature_distance_common(fv_modify, feature_vec_s2, max_d, min_d)
-                d_combine.append(d)
-            d_combine.sort()
-            d = d_combine[0]
-
-        elif l_s1 < l_s2:
-            l = [l_s1, l_s2]
-            l.sort()
-            l_min = l[0]
-            l_max = l[1]
-            # 在特征数多的特征向量中随机选取相应个特征，加扭转
-            matrix = random_choice(l_max, l_min, choice_times=choice_times)
-            m = enumnate_list(matrix)
-            fv_modify = np.zeros((l_min, colum_n))
-            d_combine = []
-            for l in m:
-                fv_modify = feature_vec_s2[l, :]
-                d = feature_distance_common(fv_modify, feature_vec_s1, max_d, min_d)
-                d_combine.append(d)
-            d_combine.sort()
-            d=d_combine[0]
-        distance_non_count.append(d)
-
-    # 删除只有一个特征向量的对比
-    while 1.0 in distance_non_count:
-        distance_non_count.remove(1.0)
-    print(distance_non_count)
-    print(len(distance_non_count))
-
-    # # 画出非同源对比的直方图
-    # n1, bins1, patches1 = plt.hist(distance_isogeny_count, density=0, bins=len(distance_isogeny_count), facecolor='r',
-    #                                edgecolor='w', cumulative=False, label='same source')
-    n2, bins2, patches2 = plt.hist(distance_non_count, density = 0, bins = len(distance_non_count), facecolor='cyan',
-                                   edgecolor='k', alpha = 0.3, cumulative=False, label='different source')
-    plt.legend()
-    plt.show()
-
-    # 再次尝试用seaborn绘图
-    # sns.distplot(distance_isogeny_count, hist=True, kde=True, rug=True)  # 前两个默认就是True,rug是在最下方显示出频率情况，默认为False
-    # bins=20 表示等分为20份的效果，同样有label等等参数
-    # sns.kdeplot(s1, shade=True, color='r')  # shade表示线下颜色为阴影,color表示颜色是红色
-    # sns.rugplot(s1)  # 在下方画出频率情况
 
 
 
