@@ -369,11 +369,11 @@ if __name__ == '__main__':
     ds_file_R = combine(glob(different_source_file_path + '\\*\\R*.csv'), 2)
     ds_file = ds_file_L + ds_file_R
     # 从所有的非同源文件夹中选组
-    sample_n = 50
-    ds_list = random.sample(ds_file, sample_n)
-    for i in range(len(ds_list)):
+    # sample_n = 50
+    # ds_list = random.sample(ds_file, sample_n)
+    for i in range(len(ds_file)):
         # 首先选出两个文件夹
-        file1, file2 = ds_list[i][0], ds_list[i][1]
+        file1, file2 = ds_file[i][0], ds_file[i][1]
         feature_vec_s1 = feature_vec_common(file1)
         feature_vec_s2 = feature_vec_common(file2)
 
