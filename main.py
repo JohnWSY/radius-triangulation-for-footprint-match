@@ -318,47 +318,48 @@ def feature_distance_common(feature_mat1, feature_mat2, max, min):
 
 if __name__ == '__main__':
     colum_n = 4  # 特征向量包含的参数个数
-    # 这里同源的数据多了一级目录
-    path='F:\\footprint\same source'
-    file_path = glob(path+'\\*')
-    # 这里将全局特征向量的最大最小值保存下来
-    result = featurevec_overall(path)
-    max_s = result[0]
-    min_s = result[1]
-    #
-    # 同源的数据比较
-    distance_isogeny_count=[]
-    for ind in range(len(file_path)):
-        # 左脚
-        csv_path_L = glob(file_path[ind]+'\\L*.csv')
-        # 右脚
-        csv_path_R = glob(file_path[ind]+'\\R*.csv')
-        # 生成csv文件路径list
-        csv_list_L = [csv_path_L[i] for i in range(len(csv_path_L))]
-        csv_list_R = [csv_path_R[i] for i in range(len(csv_path_R))]
-        end_list = []
-        # 将左右脚枚举的同源数据放在一起
-        end_list.extend(combine(csv_list_L, 2))
-        end_list.extend(combine(csv_list_R, 2))
-        for i in range(len(end_list)):
-            try:
-                # 求出两个鞋印间的特征向量欧式距离
-                d = feature_distance(end_list[i][0], end_list[i][1], max_s, min_s)
-                distance_isogeny_count.append(d)
-                # 去掉仅有一个特征向量的情况，d=1
-            except Exception as e:
-                logging.exception(e)
-                # 此处数据准备过程中，有一文件人工删除了某一特征，所以无法计算
-                print(file_path[ind]+'错误'+'ind = %d' %ind)
-    while 1.0 in distance_isogeny_count:
-        distance_isogeny_count.remove(1.0)
-    print(distance_isogeny_count)
-    print(len(distance_isogeny_count))
+    choice_times = 5    # 非同源随机选取的次数
+    # # 这里同源的数据多了一级目录
+    # path='F:\\footprint\same source'
+    # file_path = glob(path+'\\*')
+    # # 这里将全局特征向量的最大最小值保存下来
+    # result = featurevec_overall(path)
+    # max_s = result[0]
+    # min_s = result[1]
+    # #
+    # # 同源的数据比较
+    # distance_isogeny_count=[]
+    # for ind in range(len(file_path)):
+    #     # 左脚
+    #     csv_path_L = glob(file_path[ind]+'\\L*.csv')
+    #     # 右脚
+    #     csv_path_R = glob(file_path[ind]+'\\R*.csv')
+    #     # 生成csv文件路径list
+    #     csv_list_L = [csv_path_L[i] for i in range(len(csv_path_L))]
+    #     csv_list_R = [csv_path_R[i] for i in range(len(csv_path_R))]
+    #     end_list = []
+    #     # 将左右脚枚举的同源数据放在一起
+    #     end_list.extend(combine(csv_list_L, 2))
+    #     end_list.extend(combine(csv_list_R, 2))
+    #     for i in range(len(end_list)):
+    #         try:
+    #             # 求出两个鞋印间的特征向量欧式距离
+    #             d = feature_distance(end_list[i][0], end_list[i][1], max_s, min_s)
+    #             distance_isogeny_count.append(d)
+    #             # 去掉仅有一个特征向量的情况，d=1
+    #         except Exception as e:
+    #             logging.exception(e)
+    #             # 此处数据准备过程中，有一文件人工删除了某一特征，所以无法计算
+    #             print(file_path[ind]+'错误'+'ind = %d' %ind)
+    # while 1.0 in distance_isogeny_count:
+    #     distance_isogeny_count.remove(1.0)
+    # print(distance_isogeny_count)
+    # print(len(distance_isogeny_count))
 
     # 非同源的数据比较
     distance_non_count=[]
     # 这里采用testV1.3的数据做非同源的计算
-    different_source_file_path = 'F:\足迹\精匹配测试数据V1.0\\testV1.3'
+    different_source_file_path = 'F:\足迹\\footprint\different source'
     # 这里计算所有非同源的数据最大最小值
     result = featurevec_overall(different_source_file_path)
     max_d = result[0]
@@ -388,8 +389,8 @@ if __name__ == '__main__':
             l.sort()
             l_min = l[0]
             l_max = l[1]
-            # 在特征数多的特征向量中选取相应个特征，而且必须枚举所有可能的组合
-            matrix = combine(range(l_max), l_min)
+            # 在特征数多的特征向量中随机选取相应个特征
+            matrix = random_choice(l_max, l_min, choice_times=choice_times)
             m = enumnate_list(matrix)
             fv_modify = np.zeros((l_min, colum_n))
             d_combine = []
@@ -405,8 +406,8 @@ if __name__ == '__main__':
             l.sort()
             l_min = l[0]
             l_max = l[1]
-            # 在特征数多的特征向量中选取相应个特征，而且必须枚举所有可能的组合
-            matrix = combine(range(l_max), l_min)
+            # 在特征数多的特征向量中随机选取相应个特征，加扭转
+            matrix = random_choice(l_max, l_min, choice_times=choice_times)
             m = enumnate_list(matrix)
             fv_modify = np.zeros((l_min, colum_n))
             d_combine = []
