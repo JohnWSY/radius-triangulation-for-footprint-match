@@ -307,20 +307,9 @@ def feature_distance_common(feature_mat1, feature_mat2, max, min):
     # 首先进行归一化
     delta=max-min
 
-    # 仅有一个特征时，只有特征方向
-    if len(feature_mat1) == 1 or len(feature_mat2) == 1:
-        fvr_norm = (feature_mat1[:, 0]-min[:, 0]) / delta[:, 0]
-        fvm_norm = (feature_mat2[:, 0]-min[:, 0]) / delta[:, 0]
-        # print(self.feature_vec_reference)
-        # print(self.feature_vec_match)
-    # 仅有两个特征时，无法计算特征向量的最后一项——三角形面积
-    elif len(feature_mat1) == 2 or len(feature_mat2) == 2:
-        fvr_norm = (feature_mat1[:, :-1]-min[:, -1])/delta[:, :-1]
-        fvm_norm = (feature_mat2[:, :-1]-min[:, :-1])/delta[:, :-1]
-    else:
-        fvr_norm = (feature_mat1)/delta
-        fvm_norm = (feature_mat2)/delta
-    # 计算欧氏距离，是否有其他距离的算法增加，可以对比小效果
+    fvr_norm = (feature_mat1)/delta
+    fvm_norm = (feature_mat2)/delta
+    # 计算欧氏距离，是否有其他距离的算法增加，可以对比效果
     distance = np.sqrt(np.sum(pow(fvr_norm-fvm_norm, 2)))
 
     return distance
@@ -408,6 +397,8 @@ if __name__ == '__main__':
                 fv_modify = feature_vec_s1[l, :]
                 d = feature_distance_common(fv_modify, feature_vec_s2, max_d, min_d)
                 d_combine.append(d)
+            d_combine.sort()
+            d = d_combine[0]
 
         elif l_s1 < l_s2:
             l = [l_s1, l_s2]
@@ -423,8 +414,9 @@ if __name__ == '__main__':
                 fv_modify = feature_vec_s2[l, :]
                 d = feature_distance_common(fv_modify, feature_vec_s1, max_d, min_d)
                 d_combine.append(d)
-        d_combine.sort()
-        distance_non_count.append(d_combine[0])
+            d_combine.sort()
+            d=d_combine[0]
+        distance_non_count.append(d)
 
     # 删除只有一个特征向量的对比
     while 1.0 in distance_non_count:
