@@ -285,8 +285,7 @@ if __name__ == '__main__':
             logging.exception(e)
             # 此处数据准备过程中，有一文件人工删除了某一特征，所以无法计算
             print(end_list[i], i)
-    while 1.0 in distance_isogeny_count:
-        distance_isogeny_count.remove(1.0)
+
     print(distance_isogeny_count)
     print(len(distance_isogeny_count))
 
@@ -351,11 +350,11 @@ if __name__ == '__main__':
             # 如果组合数超过一万，那么就随机取一万次
             if comb(l_max, l_min) > threshold:
                 matrix = random_choice(l_max, l_min, threshold)
-                m = enumnate_list(matrix)
+                m = enumerate_list(matrix)
             # 如果组合少于一万，就枚举
             else:
                 matrix = combine(range(l_max), l_min)
-                m = enumnate_list(matrix)
+                m = enumerate_list(matrix)
 
             if l_d1 > l_d2:
                 for l in m:
@@ -374,9 +373,6 @@ if __name__ == '__main__':
                 d=d_combine[0]
         distance_non_count.append(d)
 
-    # 删除只有一个特征向量的对比
-    while 1.0 in distance_non_count:
-        distance_non_count.remove(1.0)
     print(distance_non_count)
     print(len(distance_non_count))
 
