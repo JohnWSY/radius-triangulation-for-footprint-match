@@ -178,10 +178,11 @@ def featurevec_overall(csv_list):
 def normalize(matrix, max, min):
 
     delta = max - min
+    matrix_normalize = np.zeros((len(matrix), colum_n))
     if len(matrix) == 1:
-        matrix_normalize = (matrix[:, 0]-min[:, 0]) / delta[:, 0]
+        matrix_normalize[:, 0] = (matrix[:, 0]-min[:, 0]) / delta[:, 0]
     elif len(matrix) == 2:
-        matrix_normalize = (matrix[:, :-1]-min[:, :-1])/delta[:, :-1]
+        matrix_normalize[:, :-1] = (matrix[:, :-1]-min[:, :-1])/delta[:, :-1]
     else:
         matrix_normalize = (matrix - min) / delta
 
@@ -228,69 +229,69 @@ def feature_distance(feature_mat1, feature_mat2, max, min):
 if __name__ == '__main__':
     colum_n = 4  # 特征向量包含的参数个数
     threshold = 1000  # 组合计算阈值
-    # # 这里同源的数据多了一级目录
-    # same_source_path=glob('F:\足迹\\footprint\same source\*\*')
-    # csv_list = []
-    # for p in same_source_path:
-    #     csv_path = glob(p+'\\*.csv')
-    #     # 生成csv文件路径list
-    #     _csv_list = [csv_path[i] for i in range(len(csv_path))]
-    #     csv_list += _csv_list
-    # # 这里将全局特征向量的最大最小值保存下来
-    # result1 = featurevec_overall(csv_list)
-    # max_s = result1[0]
-    # min_s = result1[1]
-    # #
-    # # 同源的数据比较
-    # # 先从same_source中挑出所有L和R的分开
-    # csv_path_L = []
-    # csv_path_R = []
-    # for each in same_source_path:
-    #     if 'L' in each:
-    #         csv_path_L.append(each)
-    #     else:
-    #         csv_path_R.append(each)
-    # distance_isogeny_count=[]
-    # end_list=[]
-    # for ind in range(len(csv_path_L)):
-    #     # 生成csv文件路径list
-    #     csv_list_L = glob(csv_path_L[ind]+'\\L*.csv')
-    #     end_list.extend(combine(csv_list_L, 2))
-    # for innd in range(len(csv_path_R)):
-    #     csv_list_R = glob(csv_path_R[innd]+'\\R*.csv')
-    #     end_list.extend(combine(csv_list_R, 2))
-    # for i in range(len(end_list)):
-    #     # print(end_list[i])
-    #     feature_vec1, feature_vec2 = feature_vec_same(end_list[i][0], end_list[i][1])
-    #     featurevec1 = normalize(feature_vec1, max_s, min_s)
-    #     featurevec2 = normalize(feature_vec2, max_s, min_s)
-    #     try:
-    #         # 求长度没意义，同源的一定等长
-    #         # 应该直接旋转
-    #         l_s = len(featurevec1)
-    #         matrix = list(range(l_s))
-    #         m = roll_list(matrix)
-    #         fv_modify = np.zeros((l_s, colum_n))
-    #         d_combine = []
-    #         for l in m:
-    #             fv_modify = featurevec2[l, :]
-    #             d = feature_distance(featurevec1, fv_modify, max_s, min_s)
-    #             d_combine.append(d)
-    #         d_combine.sort()
-    #         d = d_combine[0]
-    #         distance_isogeny_count.append(d)
-    #         # 去掉仅有一个特征向量的情况，d=1
-    #     except Exception as e:
-    #         logging.exception(e)
-    #         # 此处数据准备过程中，有一文件人工删除了某一特征，所以无法计算
-    #         print(end_list[i], i)
-    # while 1.0 in distance_isogeny_count:
-    #     distance_isogeny_count.remove(1.0)
-    # print(distance_isogeny_count)
-    # print(len(distance_isogeny_count))
+    # 这里同源的数据多了一级目录
+    same_source_path=glob('F:\足迹\\footprint\same source\*\*')
+    csv_list = []
+    for p in same_source_path:
+        csv_path = glob(p+'\\*.csv')
+        # 生成csv文件路径list
+        _csv_list = [csv_path[i] for i in range(len(csv_path))]
+        csv_list += _csv_list
+    # 这里将全局特征向量的最大最小值保存下来
+    result1 = featurevec_overall(csv_list)
+    max_s = result1[0]
+    min_s = result1[1]
     #
-    # # 这里加一个保存数据到txt文件
-    # text_save('F:\足迹\\footprint\same_source.txt', distance_isogeny_count)
+    # 同源的数据比较
+    # 先从same_source中挑出所有L和R的分开
+    csv_path_L = []
+    csv_path_R = []
+    for each in same_source_path:
+        if 'L' in each:
+            csv_path_L.append(each)
+        else:
+            csv_path_R.append(each)
+    distance_isogeny_count=[]
+    end_list=[]
+    for ind in range(len(csv_path_L)):
+        # 生成csv文件路径list
+        csv_list_L = glob(csv_path_L[ind]+'\\L*.csv')
+        end_list.extend(combine(csv_list_L, 2))
+    for innd in range(len(csv_path_R)):
+        csv_list_R = glob(csv_path_R[innd]+'\\R*.csv')
+        end_list.extend(combine(csv_list_R, 2))
+    for i in range(len(end_list)):
+        # print(end_list[i])
+        feature_vec1, feature_vec2 = feature_vec_same(end_list[i][0], end_list[i][1])
+        featurevec1 = normalize(feature_vec1, max_s, min_s)
+        featurevec2 = normalize(feature_vec2, max_s, min_s)
+        try:
+            # 求长度没意义，同源的一定等长
+            # 应该直接旋转
+            l_s = len(featurevec1)
+            matrix = list(range(l_s))
+            m = roll_list(matrix)
+            fv_modify = np.zeros((l_s, colum_n))
+            d_combine = []
+            for l in m:
+                fv_modify = featurevec2[l, :]
+                d = feature_distance(featurevec1, fv_modify, max_s, min_s)
+                d_combine.append(d)
+            d_combine.sort()
+            d = d_combine[0]
+            distance_isogeny_count.append(d)
+            # 去掉仅有一个特征向量的情况，d=1
+        except Exception as e:
+            logging.exception(e)
+            # 此处数据准备过程中，有一文件人工删除了某一特征，所以无法计算
+            print(end_list[i], i)
+    while 1.0 in distance_isogeny_count:
+        distance_isogeny_count.remove(1.0)
+    print(distance_isogeny_count)
+    print(len(distance_isogeny_count))
+
+    # 这里加一个保存数据到txt文件
+    text_save('F:\足迹\\footprint\same_source.txt', distance_isogeny_count)
 
     # 非同源的数据比较
     distance_non_count=[]
