@@ -10,6 +10,7 @@ import re
 from functools import reduce
 import math
 import pandas as pd
+from scipy.special import perm, comb
 import os
 from scipy import stats
 import seaborn as sns
@@ -219,13 +220,14 @@ def feature_vec_same(csv1, csv2):
 def feature_distance(feature_mat1, feature_mat2, max, min):
 
     # 计算欧氏距离，是否有其他距离的算法增加，可以对比效果
-    distance = np.sqrt(np.sum(pow(normalize(feature_mat1, max, min)-normalize(feature_mat2, max, min), 2)))
+    distance = np.sqrt(np.sum(pow(feature_mat1-feature_mat2, 2)))
 
     return distance
 
 
 if __name__ == '__main__':
     colum_n = 4  # 特征向量包含的参数个数
+    threshold = 1000  # 组合计算阈值
     # # 这里同源的数据多了一级目录
     # same_source_path=glob('F:\足迹\\footprint\same source\*\*')
     # csv_list = []
@@ -259,7 +261,9 @@ if __name__ == '__main__':
     #     end_list.extend(combine(csv_list_R, 2))
     # for i in range(len(end_list)):
     #     # print(end_list[i])
-    #     featurevec1, featurevec2 = feature_vec_same(end_list[i][0], end_list[i][1])
+    #     feature_vec1, feature_vec2 = feature_vec_same(end_list[i][0], end_list[i][1])
+    #     featurevec1 = normalize(feature_vec1, max_s, min_s)
+    #     featurevec2 = normalize(feature_vec2, max_s, min_s)
     #     try:
     #         # 求长度没意义，同源的一定等长
     #         # 应该直接旋转
@@ -326,8 +330,8 @@ if __name__ == '__main__':
     for i in range(len(ds_file)):
         # 首先选出两个文件
         file1, file2 = ds_file[i][0], ds_file[i][1]
-        feature_vec_s1 = feature_vec_common(file1)
-        feature_vec_s2 = feature_vec_common(file2)
+        feature_vec_s1 = normalize(feature_vec_common(file1), max_d, min_d)
+        feature_vec_s2 = normalize(feature_vec_common(file2), max_d, min_d)
 
         # 选出两个特征向量包含的最少特征
         l_d1 = len(feature_vec_s1)
@@ -336,39 +340,37 @@ if __name__ == '__main__':
         if l_d1 == l_d2:
             d = feature_distance(feature_vec_s1, feature_vec_s2, max_d, min_d)
 
-        elif l_d1 > l_d2:
+        else:
             l = [l_d1, l_d2]
             l.sort()
             l_min = l[0]
             l_max = l[1]
-            # 在特征数多的特征向量中随机选取相应个特征
-            matrix = random_choice(l_max, l_min, choice_times=l_max)
-            m = enumnate_list(matrix)
             fv_modify = np.zeros((l_min, colum_n))
             d_combine = []
-            for l in m:
-                fv_modify = feature_vec_s1[l, :]
-                d = feature_distance(fv_modify, feature_vec_s2, max_d, min_d)
-                d_combine.append(d)
-            d_combine.sort()
-            d = d_combine[0]
+            # 如果组合数超过一万，那么就随机取一万次
+            if comb(l_max, l_min) > threshold:
+                matrix = random_choice(l_max, l_min, threshold)
+                m = enumnate_list(matrix)
+            # 如果组合少于一万，就枚举
+            else:
+                matrix = combine(range(l_max), l_min)
+                m = enumnate_list(matrix)
 
-        elif l_d1 < l_d2:
-            l = [l_d1, l_d2]
-            l.sort()
-            l_min = l[0]
-            l_max = l[1]
-            # 在特征数多的特征向量中随机选取相应个特征，加扭转
-            matrix = random_choice(l_max, l_min, choice_times=l_max)
-            m = enumnate_list(matrix)
-            fv_modify = np.zeros((l_min, colum_n))
-            d_combine = []
-            for l in m:
-                fv_modify = feature_vec_s2[l, :]
-                d = feature_distance(fv_modify, feature_vec_s1, max_d, min_d)
-                d_combine.append(d)
-            d_combine.sort()
-            d=d_combine[0]
+            if l_d1 > l_d2:
+                for l in m:
+                    fv_modify = feature_vec_s1[l, :]
+                    d_d = feature_distance(fv_modify, feature_vec_s2, max_d, min_d)
+                    d_combine.append(d_d)
+                d_combine.sort()
+                d = d_combine[0]
+
+            elif l_d1 < l_d2:
+                for l in m:
+                    fv_modify = feature_vec_s2[l, :]
+                    d_d = feature_distance(fv_modify, feature_vec_s1, max_d, min_d)
+                    d_combine.append(d_d)
+                d_combine.sort()
+                d=d_combine[0]
         distance_non_count.append(d)
 
     # 删除只有一个特征向量的对比

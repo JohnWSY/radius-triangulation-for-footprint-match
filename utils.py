@@ -134,7 +134,7 @@ def enumnate_list(end):
 
     return result
 
-# 定义一个方法，在非同源鞋印特征数量不等时，多次在较大的特征数中多次选出与少量特征对应的数量
+# 定义一个方法，在非同源鞋印特征数量不等时，较大的特征数中多次选出与少量特征对应的数量
 def random_choice(l_max, l_min, choice_times):
     l_end=[]
     for i in range(choice_times):
