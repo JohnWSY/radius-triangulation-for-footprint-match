@@ -15,6 +15,8 @@ from scipy import stats
 import seaborn as sns
 
 
+
+
 # 特征类型，以备后期特征向量中要加入
 class Shape(Enum):
     POINT = 0
@@ -224,88 +226,105 @@ def feature_distance(feature_mat1, feature_mat2, max, min):
 
 if __name__ == '__main__':
     colum_n = 4  # 特征向量包含的参数个数
-    # 这里同源的数据多了一级目录
-    same_source_path=glob('F:\足迹\\footprint\same source\*\*')
-    csv_list = []
-    for p in same_source_path:
-        csv_path = glob(p+'\\*.csv')
-        # 生成csv文件路径list
-        _csv_list = [csv_path[i] for i in range(len(csv_path))]
-        csv_list += _csv_list
-    # 这里将全局特征向量的最大最小值保存下来
-    result1 = featurevec_overall(csv_list)
-    max_s = result1[0]
-    min_s = result1[1]
+    # # 这里同源的数据多了一级目录
+    # same_source_path=glob('F:\足迹\\footprint\same source\*\*')
+    # csv_list = []
+    # for p in same_source_path:
+    #     csv_path = glob(p+'\\*.csv')
+    #     # 生成csv文件路径list
+    #     _csv_list = [csv_path[i] for i in range(len(csv_path))]
+    #     csv_list += _csv_list
+    # # 这里将全局特征向量的最大最小值保存下来
+    # result1 = featurevec_overall(csv_list)
+    # max_s = result1[0]
+    # min_s = result1[1]
+    # #
+    # # 同源的数据比较
+    # # 先从same_source中挑出所有L和R的分开
+    # csv_path_L = []
+    # csv_path_R = []
+    # for each in same_source_path:
+    #     if 'L' in each:
+    #         csv_path_L.append(each)
+    #     else:
+    #         csv_path_R.append(each)
+    # distance_isogeny_count=[]
+    # end_list=[]
+    # for ind in range(len(csv_path_L)):
+    #     # 生成csv文件路径list
+    #     csv_list_L = glob(csv_path_L[ind]+'\\L*.csv')
+    #     end_list.extend(combine(csv_list_L, 2))
+    # for innd in range(len(csv_path_R)):
+    #     csv_list_R = glob(csv_path_R[innd]+'\\R*.csv')
+    #     end_list.extend(combine(csv_list_R, 2))
+    # for i in range(len(end_list)):
+    #     # print(end_list[i])
+    #     featurevec1, featurevec2 = feature_vec_same(end_list[i][0], end_list[i][1])
+    #     try:
+    #         # 求长度没意义，同源的一定等长
+    #         # 应该直接旋转
+    #         l_s = len(featurevec1)
+    #         matrix = list(range(l_s))
+    #         m = roll_list(matrix)
+    #         fv_modify = np.zeros((l_s, colum_n))
+    #         d_combine = []
+    #         for l in m:
+    #             fv_modify = featurevec2[l, :]
+    #             d = feature_distance(featurevec1, fv_modify, max_s, min_s)
+    #             d_combine.append(d)
+    #         d_combine.sort()
+    #         d = d_combine[0]
+    #         distance_isogeny_count.append(d)
+    #         # 去掉仅有一个特征向量的情况，d=1
+    #     except Exception as e:
+    #         logging.exception(e)
+    #         # 此处数据准备过程中，有一文件人工删除了某一特征，所以无法计算
+    #         print(end_list[i], i)
+    # while 1.0 in distance_isogeny_count:
+    #     distance_isogeny_count.remove(1.0)
+    # print(distance_isogeny_count)
+    # print(len(distance_isogeny_count))
     #
-    # 同源的数据比较
-    # 先从same_source中挑出所有L和R的分开
-    csv_path_L = []
-    csv_path_R = []
-    for each in same_source_path:
-        if 'L' in each:
-            csv_path_L.append(each)
-        else:
-            csv_path_R.append(each)
-    distance_isogeny_count=[]
-    end_list=[]
-    for ind in range(len(csv_path_L)):
-        # 生成csv文件路径list
-        csv_list_L = glob(csv_path_L[ind]+'\\L*.csv')
-        end_list.extend(combine(csv_list_L, 2))
-    for innd in range(len(csv_path_R)):
-        csv_list_R = glob(csv_path_R[innd]+'\\R*.csv')
-        end_list.extend(combine(csv_list_R, 2))
-    for i in range(len(end_list)):
-        featurevec1, featurevec2 = feature_vec_same(end_list[i][0], end_list[i][1])
-        try:
-            # 求长度没意义，同源的一定等长
-            # 应该直接旋转
-            l_s = len(featurevec1)
-            matrix = list(range(l_s))
-            m = roll_list(matrix)
-            fv_modify = np.zeros((l_s, colum_n))
-            d_combine = []
-            for l in m:
-                fv_modify = featurevec2[l, :]
-                d = feature_distance(featurevec1, fv_modify, max_s, min_s)
-                d_combine.append(d)
-            d_combine.sort()
-            d = d_combine[0]
-            distance_isogeny_count.append(d)
-            # 去掉仅有一个特征向量的情况，d=1
-        except Exception as e:
-            logging.exception(e)
-            # 此处数据准备过程中，有一文件人工删除了某一特征，所以无法计算
-            print(end_list[i]+'错误'+'i = %d' %i)
-    while 1.0 in distance_isogeny_count:
-        distance_isogeny_count.remove(1.0)
-    print(distance_isogeny_count)
-    print(len(distance_isogeny_count))
-
-    # 这里加一个保存数据到txt文件
-    text_save('F:\足迹\\footprint\same_source.txt', distance_isogeny_count)
+    # # 这里加一个保存数据到txt文件
+    # text_save('F:\足迹\\footprint\same_source.txt', distance_isogeny_count)
 
     # 非同源的数据比较
     distance_non_count=[]
-    # 这里采用testV1.3的数据做非同源的计算
     different_source_file_path = glob('F:\足迹\\footprint\different source\*')
     # 这里计算所有非同源的数据最大最小值
-    csv_list = []
+    csv_list_L = []
+    csv_list_R = []
+    # 存储每个文件夹中同源的鞋印组合
+    del_list_L = []
+    del_list_R = []
     for p in different_source_file_path:
-        csv_path = glob(p + '\\*.csv')
-        # 生成csv文件路径list
-        _csv_list = [csv_path[i] for i in range(len(csv_path))]
-        csv_list += _csv_list
+        csv_path_L = glob(p + '\\L*.csv')
+        # 生成csv-L文件路径list
+        _csv_list_L = [csv_path_L[i] for i in range(len(csv_path_L))]
+        del_csv_list_L = combine(_csv_list_L, 2)
+        del_list_L += del_csv_list_L
+        csv_list_L += _csv_list_L
+        # 生成csv-R文件路径list
+        csv_path_R = glob(p + '\\R*.csv')
+        _csv_list_R = [csv_path_R[i] for i in range(len(csv_path_R))]
+        del_csv_list_R = combine(_csv_list_R, 2)
+        del_list_R += del_csv_list_R
+        csv_list_R += _csv_list_R
+    csv_list = csv_list_L + csv_list_R
+    del_list = del_list_L + del_list_R
     result2 = featurevec_overall(csv_list)
     max_d = result2[0]
     min_d = result2[1]
-    # 得到所有两两组合的文件夹
-    ds_file_L = combine(glob(different_source_file_path + '\\*\\L*.csv'), 2)
-    ds_file_R = combine(glob(different_source_file_path + '\\*\\R*.csv'), 2)
+    # 得到左右脚中两两组合
+    ds_file_L = combine(csv_list_L, 2)
+    ds_file_R = combine(csv_list_R, 2)
     ds_file = ds_file_L + ds_file_R
+    [ds_file.remove(x) for x in del_list]
+    # 从以上结果中要去除同源的左右脚
+
 
     for i in range(len(ds_file)):
-        # 首先选出两个文件夹
+        # 首先选出两个文件
         file1, file2 = ds_file[i][0], ds_file[i][1]
         feature_vec_s1 = feature_vec_common(file1)
         feature_vec_s2 = feature_vec_common(file2)

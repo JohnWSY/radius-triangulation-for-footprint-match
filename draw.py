@@ -41,7 +41,7 @@ def draw_distribution(same_source_path, different_source_path):
 
 if __name__ == '__main__':
 
-    draw_distribution('E:\\footprint\same_source.txt', 'E:\\footprint\different_source.txt')
+    draw_distribution('F:\足迹\\footprint\same_source.txt', 'F:\足迹\\footprint\different_source.txt')
 
 
 
