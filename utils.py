@@ -126,7 +126,7 @@ def roll_list(lt):
     return end
 
 
-def enumnate_list(end):
+def enumerate_list(end):
     result = []
     for t in end:
         l=list(t)
@@ -150,7 +150,7 @@ def mat_read(mat_path):
 
 # 读存数据的方法
 def text_save(filename, data):
-    file = open(filename,'a')
+    file = open(filename,'w')
     for i in range(len(data)):
         s = str(data[i]).replace('[','').replace(']','') #去除[],这两行按数据不同，可以选择
         s = s.replace("'",'').replace(',','') +'\n'   #去除单引号，逗号，每行末尾追加换行符
