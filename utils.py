@@ -3,6 +3,7 @@ import numpy as np
 import math
 from itertools import combinations
 import random
+from scipy.io import loadmat
 
 # 得到特征的类别
 def featuretype(features):
@@ -140,3 +141,30 @@ def random_choice(l_max, l_min, choice_times):
         l = random.sample(range(l_max), l_min)
         l_end.append(l)
     return l_end
+
+def mat_read(mat_path):
+    m = loadmat(mat_path)
+
+    return int(m['featureinfo'][3][0][0])
+
+
+# 读存数据的方法
+def text_save(filename, data):
+    file = open(filename,'a')
+    for i in range(len(data)):
+        s = str(data[i]).replace('[','').replace(']','') #去除[],这两行按数据不同，可以选择
+        s = s.replace("'",'').replace(',','') +'\n'   #去除单引号，逗号，每行末尾追加换行符
+        file.write(s)
+    file.close()
+
+# 加一个读取txt的函数
+def read_txt(filename):
+    txt = open(filename, "r")
+    txt_list = []
+    for line in txt.readlines():
+        line = line.strip()
+        # 去掉每行头尾空白
+        txt_list.append(float(line))
+    txt.close()
+
+    return txt_list
