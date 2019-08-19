@@ -218,17 +218,17 @@ def feature_vec_same(csv1, csv2):
 
 
 # 计算鞋印距离的方法
-def feature_distance(feature_mat1, feature_mat2, max, min):
+def feature_distance(feature_mat1, feature_mat2):
 
     # 计算欧氏距离，是否有其他距离的算法增加，可以对比效果
-    distance = np.sqrt(np.sum(pow(feature_mat1-feature_mat2, 2)))
+    distance = 1/(1+np.sqrt(np.sum(pow(feature_mat1-feature_mat2, 2))))
 
     return distance
 
 
 if __name__ == '__main__':
     colum_n = 4  # 特征向量包含的参数个数
-    threshold = 1000  # 组合计算阈值
+    threshold = 10**5  # 组合计算阈值
     # 这里同源的数据多了一级目录
     same_source_path=glob('F:\足迹\\footprint\same source\*\*')
     csv_list = []
@@ -275,7 +275,7 @@ if __name__ == '__main__':
             d_combine = []
             for l in m:
                 fv_modify = featurevec2[l, :]
-                d = feature_distance(featurevec1, fv_modify, max_s, min_s)
+                d = feature_distance(featurevec1, fv_modify)
                 d_combine.append(d)
             d_combine.sort()
             d = d_combine[0]
@@ -338,7 +338,7 @@ if __name__ == '__main__':
         l_d2 = len(feature_vec_s2)
 
         if l_d1 == l_d2:
-            d = feature_distance(feature_vec_s1, feature_vec_s2, max_d, min_d)
+            d = feature_distance(feature_vec_s1, feature_vec_s2)
 
         else:
             l = [l_d1, l_d2]
@@ -359,7 +359,7 @@ if __name__ == '__main__':
             if l_d1 > l_d2:
                 for l in m:
                     fv_modify = feature_vec_s1[l, :]
-                    d_d = feature_distance(fv_modify, feature_vec_s2, max_d, min_d)
+                    d_d = feature_distance(fv_modify, feature_vec_s2)
                     d_combine.append(d_d)
                 d_combine.sort()
                 d = d_combine[0]
@@ -367,7 +367,7 @@ if __name__ == '__main__':
             elif l_d1 < l_d2:
                 for l in m:
                     fv_modify = feature_vec_s2[l, :]
-                    d_d = feature_distance(fv_modify, feature_vec_s1, max_d, min_d)
+                    d_d = feature_distance(fv_modify, feature_vec_s1)
                     d_combine.append(d_d)
                 d_combine.sort()
                 d=d_combine[0]
