@@ -1,39 +1,55 @@
-# 根据原代码的main函数提取出有用的数据
 import numpy as np
 import math
 from itertools import combinations
 import random
 from scipy.io import loadmat
 
-# 得到特征的类别
-def featuretype(features):
-    feature_type = np.random.uniform(0, 0, (len(features), 1))
-    for i in range(len(features)):
-        feature_type[i] = features[i].Shape.GeometricClass.value
-    # print(featuretype)
-    return feature_type
-
-# 得到特征点坐标 (x, y)
-def featurelocation(features):
-    feature_loc = np.random.uniform(0, 0, (len(features), 2))
-    for i in range(len(features)):
-        feature_loc[i] = features[i].Location
-    # print(feature_loc)
-    return feature_loc
-
-# 得到特征点的方向，角度值
-def featuredirection(features):
-    feature_direct = np.random.uniform(0, 0, (len(features), 1))
-    for i in range(len(features)):
-        feature_direct[i] = features[i].Direction
-    return feature_direct
-
-
 def centriodloc(x, y):
     c_x = x.mean(axis = 0)
     c_y = y.mean(axis = 0)
 
     return c_x, c_y
+
+# 顶点排序（有无视凹多边形的方法，这里采用的是方位角）
+def minutia_sort(featuretype, x_fv, y_fv, c_x, c_y):
+    angle = np.random.uniform(0, 0, (len(x_fv), 1))
+    for i in range(len(x_fv)):
+        angle[i] = azimuthAngle(c_x, c_y, x_fv[i][0], y_fv[i][0])
+    feature_init = np.c_[(featuretype, x_fv, y_fv, angle)]
+    # 根据最后一列方位角进行排序
+    feature_sorted = feature_init[np.lexsort(feature_init.T)][:, :3]
+    # print(feature_final)
+    return feature_sorted
+
+
+
+# 计算多边形边长
+def polygon_len(x_fv_sorted, y_fv_sorted):
+    polygon_len = np.random.uniform(0, 0, (len(x_fv_sorted), 1))
+    feature_loc_sort = np.c_[(x_fv_sorted, y_fv_sorted)]
+    feature_loc_sort = np.insert(feature_loc_sort, len(feature_loc_sort), values=feature_loc_sort[0, :], axis=0)
+    # print(feature_loc_sort)
+    for i in range(len(x_fv_sorted)):
+        polygon_len[i] = np.sqrt(pow(feature_loc_sort[i][0]-feature_loc_sort[i+1][0], 2)+pow(feature_loc_sort[i][1]-feature_loc_sort[i+1][1], 2))
+    # print(polygon_len)
+    return polygon_len
+
+
+def triangle_area(radius_len, polyline_len):
+    radius_len1 = np.insert(radius_len, len(radius_len),
+                            values=radius_len[0], axis=0)
+    tri_area = np.random.uniform(0, 0, (len(polyline_len), 1))
+    for i in range(len(polyline_len)):
+        a = radius_len1[i]
+        b = radius_len1[i + 1]
+        c = polyline_len[i][0]
+        p = (a + b + c) / 2
+        tri_area[i] = np.sqrt(p * (p - a) * (p - b) * (p - c))
+        if math.isnan(tri_area[i]):
+            tri_area[i] = 0
+
+    return tri_area
+
 
 # 计算特征相随对于中心点的方位角
 def azimuthAngle(x1, y1, x2, y2):
@@ -60,27 +76,10 @@ def azimuthAngle(x1, y1, x2, y2):
     return result
 
 
-def minutia_sort(featuretype, x_fv, y_fv, c_x, c_y):
-    angle = np.random.uniform(0, 0, (len(x_fv), 1))
-    for i in range(len(x_fv)):
-        angle[i] = azimuthAngle(c_x, c_y, x_fv[i][0], y_fv[i][0])
-    feature_init = np.c_[(featuretype, x_fv, y_fv, angle)]
-    # 根据最后一列方位角进行排序
-    feature_sorted = feature_init[np.lexsort(feature_init.T)][:, :3]
-    # print(feature_final)
-    return feature_sorted
 
 
-# 计算多边形边长
-def polygon_len(x_fv_sorted, y_fv_sorted):
-    polygon_len = np.random.uniform(0, 0, (len(x_fv_sorted), 1))
-    feature_loc_sort = np.c_[(x_fv_sorted, y_fv_sorted)]
-    feature_loc_sort = np.insert(feature_loc_sort, len(feature_loc_sort), values=feature_loc_sort[0, :], axis=0)
-    # print(feature_loc_sort)
-    for i in range(len(x_fv_sorted)):
-        polygon_len[i] = np.sqrt(pow(feature_loc_sort[i][0]-feature_loc_sort[i+1][0], 2)+pow(feature_loc_sort[i][1]-feature_loc_sort[i+1][1], 2))
-    # print(polygon_len)
-    return polygon_len
+
+
 
 # 计算HoleAB的方向,返回的是角度值
 def GetDirection(x, y, x_m, y_m):
@@ -168,3 +167,10 @@ def read_txt(filename):
     txt.close()
 
     return txt_list
+
+def normalize(list):
+    list.sort()
+    min = list[0]
+    max = list[-1]
+    end = [(x-min)/(max-min) for x in list]
+    return end
