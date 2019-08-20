@@ -5,7 +5,7 @@ import numpy as np
 from LoadCSV import LoadCSV
 from CalcFeatureVec import FeatureVec
 
-# 这里要定义一个方法，得到全局的特征向量用于归一化，输入为所有csv文件列表，最后输出max, min
+# 这里要定义一个方法，得到全局的特征向量用于归一化，输入为所有特征向量，最后输出max, min
 class FeatureOverall(object):
 
     def __init__(self, features):
@@ -38,20 +38,14 @@ class FeatureOverall(object):
 class Normalization(object):
     # 归一化
     def __init__(self, matrix, max, min):
-        self.matrix =matrix
-        self.max = max
-        self.min = min
-        self.delta = max - min
+        delta = max - min
 
-    def normalize(self):
-        matrix_normalize = np.zeros((len(self.matrix), 4))
-        if len(self.matrix) == 1:
-            matrix_normalize[:, 0] = (self.matrix[:, 0] - self.min[:, 0]) / self.delta[:, 0]
-        elif len(self.matrix) == 2:
-            matrix_normalize[:, :-1] = (self.matrix[:, :-1] - self.min[:, :-1]) / self.delta[:, :-1]
+        self.normalize = np.zeros((len(matrix), 4))
+        if len(matrix) == 1:
+            self.normalize[:, 0] = (matrix[:, 0] - min[:, 0]) / delta[:, 0]
+        elif len(matrix) == 2:
+            self.normalize[:, :-1] = (matrix[:, :-1] - min[:, :-1]) / delta[:, :-1]
         else:
-            matrix_normalize = (self.matrix - self.min) / self.delta
-
-        return matrix_normalize
+            self.normalize = (matrix - min) / delta
 
 

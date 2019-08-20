@@ -5,11 +5,9 @@ from scipy import stats
 
 
 
-def draw_distribution(same_source_path, different_source_path):
+def draw_plot(distance_isogeny_count, distance_non_count):
 
-    distance_isogeny_count = read_txt(same_source_path)
 
-    distance_non_count = read_txt(different_source_path)
 
     # plot画出对比的直方图
 
@@ -22,7 +20,7 @@ def draw_distribution(same_source_path, different_source_path):
 
     plt.show()
 
-
+def draw_seaborn(distance_isogeny_count, distance_non_count):
 
     # seaborn绘图
     sns.set(style='white', palette="muted", color_codes=True)
@@ -41,8 +39,17 @@ def draw_distribution(same_source_path, different_source_path):
 
 
 if __name__ == '__main__':
+    same_source_path = r'F:\足迹\\footprint\same_source(normalize).txt'
 
-    draw_distribution('F:\足迹\\footprint\same_source.txt', 'F:\足迹\\footprint\different_source.txt')
+    different_source_path = r'F:\足迹\\footprint\different_source(normalize).txt'
+
+    distance_isogeny_count = read_txt(same_source_path)
+
+    distance_non_count = read_txt(different_source_path)
+
+    draw_plot(distance_isogeny_count, distance_non_count)
+
+    # draw_seaborn(distance_isogeny_count, distance_non_count)
 
 
 

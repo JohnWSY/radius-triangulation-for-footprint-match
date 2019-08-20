@@ -76,11 +76,6 @@ def azimuthAngle(x1, y1, x2, y2):
     return result
 
 
-
-
-
-
-
 # 计算HoleAB的方向,返回的是角度值
 def GetDirection(x, y, x_m, y_m):
     cov_matrix = np.zeros((2, 2))
