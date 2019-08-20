@@ -11,6 +11,7 @@ from CalcFeatureVec import *
 from Normalization import *
 from File_processing import *
 from CalcFeatureDistance import *
+import re
 
 
 
@@ -20,76 +21,78 @@ from CalcFeatureDistance import *
 
 if __name__ == '__main__':
     threshold = 1000  # 组合计算阈值
-    # # 这里同源的数据多了一级目录
-    # same_source_path=glob('F:\足迹\\footprint\same source\*\*')
-    # csv_list = []
-    # for p in same_source_path:
-    #     csv_path = glob(p+'\\*.csv')
-    #     # 生成csv文件路径list
-    #     _csv_list = [csv_path[i] for i in range(len(csv_path))]
-    #     csv_list += _csv_list
-    # # 全局csv文件的解析结果
-    # features_isogeny = list(map(LoadCSV, csv_list))
-    # result1 = FeatureOverall(features_isogeny)
-    # max_s = result1.max
-    # min_s = result1.min
-    #
-    # # 同源的数据比较
-    # # 先从same_source中挑出所有L和R的分开
-    # csv_path_L = []
-    # csv_path_R = []
-    # for each in same_source_path:
-    #     if 'L' in each:
-    #         csv_path_L.append(each)
-    #     else:
-    #         csv_path_R.append(each)
-    # distance_isogeny_count=[]
-    # end_list=[]
-    # for ind in range(len(csv_path_L)):
-    #     # 生成csv文件路径list
-    #     csv_list_L = glob(csv_path_L[ind]+'\\L*.csv')
-    #     end_list.extend(combine(csv_list_L, 2))
-    # for innd in range(len(csv_path_R)):
-    #     csv_list_R = glob(csv_path_R[innd]+'\\R*.csv')
-    #     end_list.extend(combine(csv_list_R, 2))
-    # for i in range(len(end_list)):
-    #     feature_vec1, feature_vec2 = feature_vec_same(end_list[i][0], end_list[i][1])
-    #     l_s1 = len(feature_vec1)
-    #     l_s2 = len(feature_vec2)
-    #     if l_s1<3 or l_s2 <3:
-    #         continue
-    #     featurevec1 = Normalization(feature_vec1, max_s, min_s).normalize
-    #     featurevec2 = Normalization(feature_vec2, max_s, min_s).normalize
-    #
-    #     # 应该直接旋转
-    #     l_s = len(featurevec1)
-    #     matrix = list(range(l_s))
-    #     m = roll_list(matrix)
-    #     fv_modify = np.zeros((l_s, 4))
-    #     d_combine = []
-    #     for l in m:
-    #         fv_modify = featurevec2[l, :]
-    #         d = CalcFeatureDistance(featurevec1, fv_modify).distance
-    #         d_combine.append(d)
-    #     d_combine.sort()
-    #     d = d_combine[0]
-    #     distance_isogeny_count.append(d)
-    #
-    #
-    # distance_isogeny_count = normalize(distance_isogeny_count)
-    #
-    # print(distance_isogeny_count)
-    # print(len(distance_isogeny_count))
-    #
-    # # 这里加一个保存数据到txt文件
-    # text_save('F:\足迹\\footprint\same_source.txt', distance_isogeny_count)
+    s_p = r'F:\足迹\\footprint\same source'
+    d_p = r'F:\足迹\\footprint\different source'
+    # 这里同源的数据多了一级目录
+    same_source_path=glob(s_p + '\*\*')
+    csv_list = []
+    for p in same_source_path:
+        csv_path = glob(p+'\\*.csv')
+        # 生成csv文件路径list
+        _csv_list = [csv_path[i] for i in range(len(csv_path))]
+        csv_list += _csv_list
+    # 全局csv文件的解析结果
+    features_isogeny = list(map(LoadCSV, csv_list))
+    result1 = FeatureOverall(features_isogeny)
+    max_s = result1.max
+    min_s = result1.min
+
+    # 同源的数据比较
+    # 先从same_source中挑出所有L和R的分开
+    csv_path_L = []
+    csv_path_R = []
+    for each in same_source_path:
+        if 'L' in each:
+            csv_path_L.append(each)
+        else:
+            csv_path_R.append(each)
+    distance_isogeny_count=[]
+    end_list=[]
+    for ind in range(len(csv_path_L)):
+        # 生成csv文件路径list
+        csv_list_L = glob(csv_path_L[ind]+'\\L*.csv')
+        end_list.extend(combine(csv_list_L, 2))
+    for innd in range(len(csv_path_R)):
+        csv_list_R = glob(csv_path_R[innd]+'\\R*.csv')
+        end_list.extend(combine(csv_list_R, 2))
+    for i in range(len(end_list)):
+        feature_vec1, feature_vec2 = feature_vec_same(end_list[i][0], end_list[i][1])
+        l_s1 = len(feature_vec1)
+        l_s2 = len(feature_vec2)
+        if l_s1<3 or l_s2 <3:
+            continue
+        featurevec1 = Normalization(feature_vec1, max_s, min_s).normalize
+        featurevec2 = Normalization(feature_vec2, max_s, min_s).normalize
+
+        # 应该直接旋转
+        l_s = len(featurevec1)
+        matrix = list(range(l_s))
+        m = roll_list(matrix)
+        d_combine = []
+        for l in m:
+            fv_modify = featurevec2[l, :]
+            d = CalcFeatureDistance(featurevec1, fv_modify).distance
+            d_combine.append(d)
+        d_combine.sort()
+        d = d_combine[0]
+        distance_isogeny_count.append(d)
+
+
+    distance_isogeny_count = normalize(distance_isogeny_count)
+
+    print(distance_isogeny_count)
+    print(len(distance_isogeny_count))
+
+    # 这里加一个保存数据到txt文件
+    s_s=re.match('.*\\\\', s_p)
+    text_save(s_s.group()+'same source.txt', distance_isogeny_count)
 
 
 
 
     # 非同源的数据比较
     distance_non_count=[]
-    different_source_file_path = glob('F:\足迹\\footprint\different source\*')
+    different_source_file_path = glob(d_p + '\*')
     # 这里计算所有非同源的数据最大最小值
     csv_list_L = []
     csv_list_R = []
@@ -187,8 +190,8 @@ if __name__ == '__main__':
     print(len(distance_non_count))
 
     # 这里加一个保存数据到txt文件
-    text_save('F:\足迹\\footprint\different_source.txt', distance_non_count)
-
+    s_d = re.match('.*\\\\', d_p)
+    text_save(s_d.group() + 'different source.txt', distance_isogeny_count)
 
 
 
