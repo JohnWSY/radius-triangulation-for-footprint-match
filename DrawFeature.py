@@ -64,8 +64,8 @@ class DrawFeature(object):
         cv2.waitKey(0)
 
 # if __name__ == '__main__':
-    # csv1 = 'F:\\footprint\same source\ES005S1\ES005S1-L\\L01S1.csv'
-    # csv2 = 'F:\\footprint\same source\ES005S1\ES005S1-L\\L03S1.csv'
+#     csv1 = 'F:\\footprint\same source\ES005S1\ES005S1-L\\L01S1.csv'
+#     csv2 = 'F:\\footprint\same source\ES005S1\ES005S1-L\\L03S1.csv'
     #
     # # 同源计算
     # lc1, lc2 = feature_vec_same(csv1, csv2)
