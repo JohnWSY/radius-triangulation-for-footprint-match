@@ -38,8 +38,7 @@ def feature_vec_same(csv1, csv2):
     feature_select1 = GetCommonPart(fv1, mat_list1)
     feature_select2 = GetCommonPart(fv2, mat_list2)
 
+    return feature_select1, feature_select2
 
-    feature_vec1 = FeatureVec(feature_select1.x_fv, feature_select1.y_fv, feature_select1.featuredirect).feature_vec_common
-    feature_vec2 = FeatureVec(feature_select2.x_fv, feature_select2.y_fv, feature_select2.featuredirect).feature_vec_common
 
-    return feature_vec1, feature_vec2
+

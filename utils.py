@@ -131,28 +131,32 @@ def enumerate_list(end):
 # 定义一个方法，在非同源鞋印特征数量不等时，较大的特征数中多次选出与少量特征对应的数量
 def random_choice(l_max, l_min, choice_times):
     l_end=[]
-    for i in range(choice_times):
+    i=0
+    while i <= choice_times:
         l = random.sample(range(l_max), l_min)
-        if l not in l_end:
-            l_end.append(l)
+        if l in l_end:
+            continue
+        l_end.append(l)
+        i+=1
     return l_end
 
+# 读取.mat文件中的ID
 def mat_read(mat_path):
     m = loadmat(mat_path)
 
     return int(m['featureinfo'][3][0][0])
 
 
-# 读存数据的方法
+# 存数据的方法
 def text_save(filename, data):
     file = open(filename,'w')
     for i in range(len(data)):
-        s = str(data[i]).replace('[','').replace(']','') #去除[],这两行按数据不同，可以选择
-        s = s.replace("'",'').replace(',','') +'\n'   #去除单引号，逗号，每行末尾追加换行符
+        s = str(data[i]).replace('[','').replace(']','')
+        s = s.replace("'",'').replace(',','') +'\n'
         file.write(s)
     file.close()
 
-# 加一个读取txt的函数
+# 读取txt的函数
 def read_txt(filename):
     txt = open(filename, "r")
     txt_list = []
@@ -164,9 +168,4 @@ def read_txt(filename):
 
     return txt_list
 
-def normalize(list):
-    list.sort()
-    min = list[0]
-    max = list[-1]
-    end = [(x-min)/(max-min) for x in list]
-    return end
+

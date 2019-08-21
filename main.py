@@ -12,6 +12,7 @@ from Normalization import *
 from File_processing import *
 from CalcFeatureDistance import *
 import re
+from DrawFeature import *
 
 
 
@@ -21,8 +22,8 @@ import re
 
 if __name__ == '__main__':
     threshold = 1000  # 组合计算阈值
-    s_p = r'F:\足迹\\footprint\same source'
-    d_p = r'F:\足迹\\footprint\different source'
+    s_p = r'F:\\footprint\same source'
+    d_p = r'F:\\footprint\different source'
     # 这里同源的数据多了一级目录
     same_source_path=glob(s_p + '\*\*')
     csv_list = []
@@ -56,7 +57,15 @@ if __name__ == '__main__':
         csv_list_R = glob(csv_path_R[innd]+'\\R*.csv')
         end_list.extend(combine(csv_list_R, 2))
     for i in range(len(end_list)):
-        feature_vec1, feature_vec2 = feature_vec_same(end_list[i][0], end_list[i][1])
+        feature_select1, feature_select2 = feature_vec_same(end_list[i][0], end_list[i][1])
+
+        img = DrawFeature(feature_select1, feature_select2)
+        img_path1 = end_list[i][0].replace('.csv', '.jpg')
+        img_path2 = end_list[i][1].replace('.csv', '.jpg')
+        img.draw(img_path1, img_path2)
+
+        feature_vec1 = FeatureVec(feature_select1.x_fv, feature_select1.y_fv, feature_select1.featuredirect).feature_vec_common
+        feature_vec2 = FeatureVec(feature_select2.x_fv, feature_select2.y_fv, feature_select2.featuredirect).feature_vec_common
         l_s1 = len(feature_vec1)
         l_s2 = len(feature_vec2)
         if l_s1<3 or l_s2 <3:
@@ -78,7 +87,7 @@ if __name__ == '__main__':
         distance_isogeny_count.append(d)
 
 
-    distance_isogeny_count = normalize(distance_isogeny_count)
+    # distance_isogeny_count = normalize(distance_isogeny_count)
 
     print(distance_isogeny_count)
     print(len(distance_isogeny_count))
@@ -122,13 +131,15 @@ if __name__ == '__main__':
     ds_file_L = combine(csv_list_L, 2)
     ds_file_R = combine(csv_list_R, 2)
     ds_file = ds_file_L + ds_file_R
-    [ds_file.remove(x) for x in del_list]
     # 从以上结果中要去除同源的左右脚
+    [ds_file.remove(x) for x in del_list]
+    # 选1000组进行测试
+    ds_test = random.sample(ds_file, 1000)
 
 
-    for i in range(len(ds_file)):
+    for i in range(len(ds_test)):
         # 首先选出两个文件
-        file1, file2 = ds_file[i][0], ds_file[i][1]
+        file1, file2 = ds_test[i][0], ds_test[i][1]
         lc1 = LoadCSV(file1)
         lc2 = LoadCSV(file2)
 
@@ -142,6 +153,8 @@ if __name__ == '__main__':
             feature_vec_s1 = Normalization(FeatureVec(lc1.x_fv, lc1.y_fv, lc1.featuredirect).feature_vec_common, max_d, min_d).normalize
             feature_vec_s2 = Normalization(FeatureVec(lc2.x_fv, lc2.y_fv, lc2.featuredirect).feature_vec_common, max_d, min_d).normalize
             d = CalcFeatureDistance(feature_vec_s1, feature_vec_s2).distance
+
+
 
         else:
             l = [l_d1, l_d2]
@@ -185,7 +198,7 @@ if __name__ == '__main__':
                 d_combine.sort()
                 d=d_combine[0]
         distance_non_count.append(d)
-    distance_non_count = normalize(distance_non_count)
+    # distance_non_count = normalize(distance_non_count)
     print(distance_non_count)
     print(len(distance_non_count))
 
