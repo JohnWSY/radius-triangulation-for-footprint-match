@@ -1,11 +1,7 @@
-from scipy.io import loadmat
 from glob import glob
 import numpy as np
 import random
 from utils import *
-import logging
-import math
-import pandas as pd
 from scipy.special import comb
 from CalcFeatureVec import *
 from Normalization import *
@@ -50,9 +46,9 @@ if __name__ == '__main__':
         feature_select1, feature_select2 = feature_vec_same(csv_list_same[i][0], csv_list_same[i][1])
         # 可视化径向剖分结果
         # img = DrawFeature(feature_select1, feature_select2)
-        # img_path1 = end_list[i][0].replace('.csv', '.jpg')
-        # img_path2 = end_list[i][1].replace('.csv', '.jpg')
-        # img.draw(img_path1, img_path2)
+        #         # img_path1 = csv_list_same[i][0].replace('.csv', '.jpg')
+        #         # img_path2 = csv_list_same[i][1].replace('.csv', '.jpg')
+        #         # img.draw(img_path1, img_path2)
 
         feature_vec1 = FeatureVec(feature_select1.x_fv, feature_select1.y_fv, feature_select1.featuredirect).feature_vec_common
         feature_vec2 = FeatureVec(feature_select2.x_fv, feature_select2.y_fv, feature_select2.featuredirect).feature_vec_common
@@ -103,7 +99,7 @@ if __name__ == '__main__':
     # text_save('F:\\footprint\different source file.txt', csv_list_different)
     # 选1000组进行测试
     # ds_test = random.sample(csv_list_different, 1000)
-
+    #
     # for i in range(len(ds_test)):
     #     # 首先选出两个文件
     #     file1, file2 = ds_test[i][0], ds_test[i][1]
@@ -152,10 +148,10 @@ if __name__ == '__main__':
                         # 调试找出非同源鞋印特征矩阵距离小于0.1的，可视化径向剖分结过，分析原因
                         # if d_d < 0.1:
                         #     print(i)
-                        #     print(ds_file[i])
+                        #     print(csv_list_different[i])
                         #     img = DrawFeature(feature_select1, lc2)
-                        #     img_path1 = ds_file[i][0].replace('.csv', '.jpg')
-                        #     img_path2 = ds_file[i][1].replace('.csv', '.jpg')
+                        #     img_path1 = csv_list_different[i][0].replace('.csv', '.jpg')
+                        #     img_path2 = csv_list_different[i][1].replace('.csv', '.jpg')
                         #     img.draw(img_path1, img_path2)
                         d_combine.append(d_d)
                 d_combine.sort()
@@ -176,10 +172,10 @@ if __name__ == '__main__':
                         # 调试找出非同源鞋印特征矩阵距离小于0.1的，可视化径向剖分结过，分析原因
                         # if d_d < 0.1:
                         #     print(i)
-                        #     print(ds_file[i])
+                        #     print(csv_list_different[i])
                         #     img = DrawFeature(lc1, feature_select2)
-                        #     img_path1 = ds_file[i][0].replace('.csv', '.jpg')
-                        #     img_path2 = ds_file[i][1].replace('.csv', '.jpg')
+                        #     img_path1 = csv_list_different[i][0].replace('.csv', '.jpg')
+                        #     img_path2 = csv_list_different[i][1].replace('.csv', '.jpg')
                         #     img.draw(img_path1, img_path2)
                         d_combine.append(d_d)
                 d_combine.sort()
