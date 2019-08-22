@@ -7,12 +7,26 @@ from VertexSort import *
 
 class DrawFeature(object):
 
+
     def __init__(self, feature1, feature2):
+        '''
+        :param feature1: 特征对象1
+        :param feature2: 特征对象2
+        '''
         self.feature1 = feature1
         self.feature2 = feature2
 
     def draw(self, img_path1, img_path2, r=50, color_poly = (0, 0, 255), color_radius = (0, 255, 0), color_cen = (100, 100, 200), color_direct = (0, 255, 255)):
-
+        '''
+        :param img_path1: 图1路径
+        :param img_path2: 图2路径
+        :param r: 特征方向可视化的延长半径
+        :param color_poly: 多边形线颜色
+        :param color_radius: 径向线颜色
+        :param color_cen: 径向剖分中心点颜色
+        :param color_direct: 特征方向颜色
+        :return:
+        '''
         img1=cv2.imread(img_path1, 1)
         img2=cv2.imread(img_path2, 1)
 
@@ -50,7 +64,7 @@ class DrawFeature(object):
             y2 = int(fv2.y[i])
             x_end2 = int(x2 + r * math.cos(fv2.featuredirect[i]))
             y_end2 = int(y2 + r * math.sin(fv2.featuredirect[i]))
-
+            # feature direct
             cv2.line(img1, (x1, y1), (x_end1, y_end1), color=color_direct, thickness=10, lineType=cv2.LINE_AA)
             cv2.line(img2, (x2, y2), (x_end2, y_end2), color=color_direct, thickness=10, lineType=cv2.LINE_AA)
 

@@ -3,14 +3,23 @@ from utils import *
 from CalcFeatureVec import FeatureVec
 from LoadCSV import LoadCSV
 
-
+# 同源鞋印的特征匹配关系
 class GetCommonPart(object):
     def __init__(self, fv, mat_list):
+        '''
+        :param fv: 传入特征对象
+        :param mat_list: 特征匹配关系
+        '''
         self.x_fv = fv.x_fv[mat_list]
         self.y_fv = fv.y_fv[mat_list]
         self.featuredirect = fv.featuredirect[mat_list]
 
 def feature_vec_same(csv1, csv2):
+    '''
+    :param csv1: csv文件路径
+    :param csv2: csv文件路径
+    :return: 特征匹配后的特征对象
+    '''
     # 得到所有的mat文件路径
     mat_path1 = glob(csv1.replace('.csv', '*.mat'))
     mat_path2 = glob(csv2.replace('.csv', '*.mat'))

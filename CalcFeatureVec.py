@@ -5,6 +5,12 @@ from VertexSort import *
 class FeatureVec(object):
 
     def __init__(self, x_fv, y_fv, featuredirect):
+        '''
+        :param x_fv: 特征位置x
+        :param y_fv: 特征位置y
+        :param featuredirect:特征方向
+        '''
+        '''算法的核心，根据输入的特征位置与方向计算每个鞋印的特征矩阵'''
         # 得到几何中心坐标
         c_x = centriodloc(x_fv, y_fv)[0]
         c_y = centriodloc(x_fv, y_fv)[1]

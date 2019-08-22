@@ -37,15 +37,26 @@ class FeatureOverall(object):
 
 class Normalization(object):
     # 归一化
-    def __init__(self, matrix, max, min):
-        delta = max - min
+    def __init__(self, max, min):
+        '''
+        :param max:最大值向量
+        :param min: 最小值向量
+        '''
+        self.max = max
+        self.min = min
+        self.delta = max - min
 
-        self.normalize = np.zeros((len(matrix), 4))
+    def normalize(self, matrix):
+        norm_matrix = np.zeros((len(matrix), 4))
+        # 只有一个特征，特征矩阵只有一行，且只有第一列有数据
         if len(matrix) == 1:
-            self.normalize[:, 0] = (matrix[:, 0] - min[:, 0]) / delta[:, 0]
+            norm_matrix[:, 0] = (matrix[:, 0] - self.min[:, 0]) / self.delta[:, 0]
+        # 只有两个特征，特征矩阵只有两行，且只有前三列有数据
         elif len(matrix) == 2:
-            self.normalize[:, :-1] = (matrix[:, :-1] - min[:, :-1]) / delta[:, :-1]
+            norm_matrix[:, :-1] = (matrix[:, :-1] - self.min[:, :-1]) / self.delta[:, :-1]
         else:
-            self.normalize = (matrix - min) / delta
+            norm_matrix = (matrix - self.min) / self.delta
+
+        return norm_matrix
 
 

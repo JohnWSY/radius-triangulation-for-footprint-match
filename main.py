@@ -22,78 +22,76 @@ from DrawFeature import *
 
 if __name__ == '__main__':
     threshold = 1000  # 组合计算阈值
-    s_p = r'F:\\footprint\same source'
-    d_p = r'F:\\footprint\different source'
-    # # 这里同源的数据多了一级目录
-    # same_source_path=glob(s_p + '\*\*')
-    # csv_list = []
-    # for p in same_source_path:
-    #     csv_path = glob(p+'\\*.csv')
-    #     # 生成csv文件路径list
-    #     _csv_list = [csv_path[i] for i in range(len(csv_path))]
-    #     csv_list += _csv_list
-    # # 全局csv文件的解析结果
-    # features_isogeny = list(map(LoadCSV, csv_list))
-    # result1 = FeatureOverall(features_isogeny)
-    # max_s = result1.max
-    # min_s = result1.min
-    #
-    # # 同源的数据比较
-    # # 先从same_source中挑出所有L和R的分开
-    # csv_path_L = []
-    # csv_path_R = []
-    # for each in same_source_path:
-    #     if 'L' in each:
-    #         csv_path_L.append(each)
-    #     else:
-    #         csv_path_R.append(each)
-    # distance_isogeny_count=[]
-    # end_list=[]
-    # for ind in range(len(csv_path_L)):
-    #     # 生成csv文件路径list
-    #     csv_list_L = glob(csv_path_L[ind]+'\\L*.csv')
-    #     end_list.extend(combine(csv_list_L, 2))
-    # for innd in range(len(csv_path_R)):
-    #     csv_list_R = glob(csv_path_R[innd]+'\\R*.csv')
-    #     end_list.extend(combine(csv_list_R, 2))
-    # for i in range(len(end_list)):
-    #     feature_select1, feature_select2 = feature_vec_same(end_list[i][0], end_list[i][1])
-    #
-    #     # img = DrawFeature(feature_select1, feature_select2)
-    #     # img_path1 = end_list[i][0].replace('.csv', '.jpg')
-    #     # img_path2 = end_list[i][1].replace('.csv', '.jpg')
-    #     # img.draw(img_path1, img_path2)
-    #
-    #     feature_vec1 = FeatureVec(feature_select1.x_fv, feature_select1.y_fv, feature_select1.featuredirect).feature_vec_common
-    #     feature_vec2 = FeatureVec(feature_select2.x_fv, feature_select2.y_fv, feature_select2.featuredirect).feature_vec_common
-    #     l_s1 = len(feature_vec1)
-    #     l_s2 = len(feature_vec2)
-    #     if l_s1<3 or l_s2 <3:
-    #         continue
-    #     featurevec1 = Normalization(feature_vec1, max_s, min_s).normalize
-    #     featurevec2 = Normalization(feature_vec2, max_s, min_s).normalize
-    #
-    #     # 应该直接旋转
-    #     l_s = len(featurevec1)
-    #     matrix = list(range(l_s))
-    #     m = roll_list(matrix)
-    #     d_combine = []
-    #     for l in m:
-    #         fv_modify = featurevec2[l, :]
-    #         d = CalcFeatureDistance(featurevec1, fv_modify).distance
-    #         d_combine.append(d)
-    #     d_combine.sort()
-    #     d = d_combine[0]
-    #     distance_isogeny_count.append(d)
-    #
-    #
-    # # distance_isogeny_count = normalize(distance_isogeny_count)
-    #
-    # print(distance_isogeny_count)
-    # print(len(distance_isogeny_count))
-    #
-    # # 这里加一个保存数据到txt文件
-    # s_s=re.match('.*\\\\', s_p)
+    s_p = r'../footprint/same source'
+    d_p = r'../footprint/different source'
+    # 这里同源的数据多了一级目录
+    same_source_path=glob(s_p + '\*\*')
+    csv_list = []
+    for p in same_source_path:
+        csv_path = glob(p+'\\*.csv')
+        # 生成csv文件路径list
+        _csv_list = [csv_path[i] for i in range(len(csv_path))]
+        csv_list += _csv_list
+    # 全局csv文件的解析结果
+    features_isogeny = list(map(LoadCSV, csv_list))
+    result1 = FeatureOverall(features_isogeny)
+    max_s = result1.max
+    min_s = result1.min
+
+    # 同源的数据比较
+    # 先从same_source中挑出所有L和R的分开
+    csv_path_L = []
+    csv_path_R = []
+    for each in same_source_path:
+        if 'L' in each:
+            csv_path_L.append(each)
+        else:
+            csv_path_R.append(each)
+    distance_isogeny_count=[]
+    end_list=[]
+    for ind in range(len(csv_path_L)):
+        # 生成csv文件路径list
+        csv_list_L = glob(csv_path_L[ind]+'\\L*.csv')
+        end_list.extend(combine(csv_list_L, 2))
+    for innd in range(len(csv_path_R)):
+        csv_list_R = glob(csv_path_R[innd]+'\\R*.csv')
+        end_list.extend(combine(csv_list_R, 2))
+    for i in range(len(end_list)):
+        feature_select1, feature_select2 = feature_vec_same(end_list[i][0], end_list[i][1])
+
+        # img = DrawFeature(feature_select1, feature_select2)
+        # img_path1 = end_list[i][0].replace('.csv', '.jpg')
+        # img_path2 = end_list[i][1].replace('.csv', '.jpg')
+        # img.draw(img_path1, img_path2)
+
+        feature_vec1 = FeatureVec(feature_select1.x_fv, feature_select1.y_fv, feature_select1.featuredirect).feature_vec_common
+        feature_vec2 = FeatureVec(feature_select2.x_fv, feature_select2.y_fv, feature_select2.featuredirect).feature_vec_common
+        l_s1 = len(feature_vec1)
+        l_s2 = len(feature_vec2)
+        if l_s1<3 or l_s2 <3:
+            continue
+        featurevec1 = Normalization(max_s, min_s).normalize(feature_vec1)
+        featurevec2 = Normalization(max_s, min_s).normalize(feature_vec2)
+
+        # 应该直接旋转
+        l_s = len(featurevec1)
+        matrix = list(range(l_s))
+        m = roll_list(matrix)
+        d_combine = []
+        for l in m:
+            fv_modify = featurevec2[l, :]
+            d = CalcFeatureDistance(featurevec1, fv_modify).distance
+            d_combine.append(d)
+        d_combine.sort()
+        d = d_combine[0]
+        distance_isogeny_count.append(d)
+
+
+    print(distance_isogeny_count)
+    print(len(distance_isogeny_count))
+
+    # 保存数据到txt文件
+    # s_s=re.match('.*/', s_p)
     # text_save(s_s.group()+'same source.txt', distance_isogeny_count)
 
 
@@ -133,10 +131,9 @@ if __name__ == '__main__':
     ds_file = ds_file_L + ds_file_R
     # 从以上结果中要去除同源的左右脚
     [ds_file.remove(x) for x in del_list]
-    text_save('F:\\footprint\different source file.txt', ds_file)
+    # text_save('F:\\footprint\different source file.txt', ds_file)
     # 选1000组进行测试
     # ds_test = random.sample(ds_file, 1000)
-
 
     # for i in range(len(ds_test)):
     #     # 首先选出两个文件
@@ -154,8 +151,8 @@ if __name__ == '__main__':
             continue
 
         if l_d1 == l_d2:
-            feature_vec_s1 = Normalization(FeatureVec(lc1.x_fv, lc1.y_fv, lc1.featuredirect).feature_vec_common, max_d, min_d).normalize
-            feature_vec_s2 = Normalization(FeatureVec(lc2.x_fv, lc2.y_fv, lc2.featuredirect).feature_vec_common, max_d, min_d).normalize
+            feature_vec_s1 = Normalization(max_d, min_d).normalize(FeatureVec(lc1.x_fv, lc1.y_fv, lc1.featuredirect).feature_vec_common)
+            feature_vec_s2 = Normalization(max_d, min_d).normalize(FeatureVec(lc2.x_fv, lc2.y_fv, lc2.featuredirect).feature_vec_common)
             d = CalcFeatureDistance(feature_vec_s1, feature_vec_s2).distance
 
         else:
@@ -175,21 +172,22 @@ if __name__ == '__main__':
                 for l in matrix:
                     # 根据列表读取相应的特征
                     feature_select1 = GetCommonPart(lc1, l)
-                    feature_vec1 = Normalization(FeatureVec(feature_select1.x_fv, feature_select1.y_fv, feature_select1.featuredirect).feature_vec_common, max_d, min_d).normalize
-                    feature_vec2 = Normalization(FeatureVec(lc2.x_fv, lc2.y_fv, lc2.featuredirect).feature_vec_common, max_d, min_d).normalize
+                    feature_vec1 = Normalization(max_d, min_d).normalize(FeatureVec(feature_select1.x_fv, feature_select1.y_fv, feature_select1.featuredirect).feature_vec_common)
+                    feature_vec2 = Normalization(max_d, min_d).normalize(FeatureVec(lc2.x_fv, lc2.y_fv, lc2.featuredirect).feature_vec_common)
 
                     # 加入旋转
                     m = roll_list(list(range(len(l))))
                     for r in m:
                         fv1 = feature_vec1[r, :]
                         d_d = CalcFeatureDistance(fv1, feature_vec2).distance
-                        if d_d < 0.1:
-                            print(i)
-                            print(ds_file[i])
-                            img = DrawFeature(feature_select1, lc2)
-                            img_path1 = ds_file[i][0].replace('.csv', '.jpg')
-                            img_path2 = ds_file[i][1].replace('.csv', '.jpg')
-                            img.draw(img_path1, img_path2)
+                        # 调试找出非同源鞋印特征矩阵距离小于0.1的，可视化径向剖分结过，分析原因
+                        # if d_d < 0.1:
+                        #     print(i)
+                        #     print(ds_file[i])
+                        #     img = DrawFeature(feature_select1, lc2)
+                        #     img_path1 = ds_file[i][0].replace('.csv', '.jpg')
+                        #     img_path2 = ds_file[i][1].replace('.csv', '.jpg')
+                        #     img.draw(img_path1, img_path2)
                         d_combine.append(d_d)
                 d_combine.sort()
                 d = d_combine[0]
@@ -197,32 +195,32 @@ if __name__ == '__main__':
 
             elif l_d1 < l_d2:
                 for l in matrix:
-                    feature_vec1 = Normalization(FeatureVec(lc1.x_fv, lc1.y_fv, lc1.featuredirect).feature_vec_common, max_d, min_d).normalize
+                    feature_vec1 = Normalization(max_d, min_d).normalize(FeatureVec(lc1.x_fv, lc1.y_fv, lc1.featuredirect).feature_vec_common)
                     feature_select2 = GetCommonPart(lc2, l)
-                    feature_vec2 = Normalization(FeatureVec(feature_select2.x_fv, feature_select2.y_fv, feature_select2.featuredirect).feature_vec_common, max_d, min_d).normalize
+                    feature_vec2 = Normalization(max_d, min_d).normalize(FeatureVec(feature_select2.x_fv, feature_select2.y_fv, feature_select2.featuredirect).feature_vec_common)
 
                     # 加入旋转
                     m = roll_list(list(range(len(l))))
                     for r in m:
                         fv1 = feature_vec1[r, :]
                         d_d = CalcFeatureDistance(fv1, feature_vec2).distance
-                        if d_d < 0.1:
-                            print(i)
-                            print(ds_file[i])
-                            img = DrawFeature(lc1, feature_select2)
-                            img_path1 = ds_file[i][0].replace('.csv', '.jpg')
-                            img_path2 = ds_file[i][1].replace('.csv', '.jpg')
-                            img.draw(img_path1, img_path2)
+                        # 调试找出非同源鞋印特征矩阵距离小于0.1的，可视化径向剖分结过，分析原因
+                        # if d_d < 0.1:
+                        #     print(i)
+                        #     print(ds_file[i])
+                        #     img = DrawFeature(lc1, feature_select2)
+                        #     img_path1 = ds_file[i][0].replace('.csv', '.jpg')
+                        #     img_path2 = ds_file[i][1].replace('.csv', '.jpg')
+                        #     img.draw(img_path1, img_path2)
                         d_combine.append(d_d)
                 d_combine.sort()
                 d=d_combine[0]
         distance_non_count.append(d)
-    # distance_non_count = normalize(distance_non_count)
     print(distance_non_count)
     print(len(distance_non_count))
 
-    # 这里加一个保存数据到txt文件
-    # s_d = re.match('.*\\\\', d_p)
+    # 保存数据到txt文件
+    # s_d = re.match('.*/', d_p)
     # text_save(s_d.group() + 'different source.txt', distance_non_count)
 
 

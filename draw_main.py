@@ -7,21 +7,15 @@ from scipy import stats
 
 def draw_plot(distance_isogeny_count, distance_non_count):
 
-
-
     # plot画出对比的直方图
-
-    # plt.hist(distance_isogeny_count, density=0, bins=500, facecolor='r', cumulative=False, label='same source')
-    #
-    # plt.hist(distance_non_count, density=0, bins=500, facecolor='cyan', alpha=0.8, cumulative=False, label='different source')
 
     plt.hist(distance_isogeny_count, density=1, bins=500, facecolor='r', cumulative=False, label='same source')
 
     plt.hist(distance_non_count, density=1, bins=500, facecolor='cyan', alpha = 0.8, cumulative=False, label='different source')
 
     plt.legend()
-
-    plt.savefig('F:\\footprint\\result_kde.jpg', bbox_inches='tight', dpi=500)
+    # 保存图片格式
+    plt.savefig('./result_plot.jpg', bbox_inches='tight', dpi=500)
 
     plt.show()
 
@@ -37,7 +31,7 @@ def draw_seaborn(distance_isogeny_count, distance_non_count):
     sns.distplot(distance_non_count, kde=False, bins=500, color='cyan', label=['different source'])
 
     plt.show()
-
+    # 带宽按照bw=n^(-1/5)计算
     t1=len(distance_isogeny_count)**(-0.2)
     t2=len(distance_non_count)**(-0.2)
 
@@ -45,9 +39,7 @@ def draw_seaborn(distance_isogeny_count, distance_non_count):
 
     sns.kdeplot(distance_non_count, label=['different source'], bw=t2, shade=True, color='cyan')
 
-    # sns.rugplot(distance_isogeny_count, color='r')
-    #
-    # sns.rugplot(distance_non_count, color='cyan')
+    # plt.savefig('../result_seaborn_kde.jpg', bbox_inches='tight', dpi=500)
 
     plt.show()
 
@@ -55,13 +47,15 @@ def draw_seaborn(distance_isogeny_count, distance_non_count):
 
     sns.kdeplot(distance_non_count, label=['different source'], bw=t2, color='cyan', cumulative=True)
 
+    # plt.savefig('../result_seaborn_cumulative.jpg', bbox_inches='tight', dpi=500)
+
     plt.show()
 
 
 if __name__ == '__main__':
-    same_source_path = r'F:\\footprint\same source(without direct).txt'
+    same_source_path = r'../same source(without direct).txt'
 
-    different_source_path = r'F:\\footprint\different source(without direct).txt'
+    different_source_path = r'../different source(without direct).txt'
 
     distance_isogeny_count = read_txt(same_source_path)
 
