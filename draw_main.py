@@ -15,7 +15,7 @@ def draw_plot(distance_isogeny_count, distance_non_count):
 
     plt.legend()
     # 保存图片格式
-    plt.savefig('./result_plot.jpg', bbox_inches='tight', dpi=500)
+    # plt.savefig('./result_plot.jpg', bbox_inches='tight', dpi=500)
 
     plt.show()
 
@@ -31,9 +31,10 @@ def draw_seaborn(distance_isogeny_count, distance_non_count):
     sns.distplot(distance_non_count, kde=False, bins=500, color='cyan', label=['different source'])
 
     plt.show()
+
     # 带宽按照bw=n^(-1/5)计算
-    t1=len(distance_isogeny_count)**(-0.2)
-    t2=len(distance_non_count)**(-0.2)
+    t1 = len(distance_isogeny_count)**(-0.2)
+    t2 = len(distance_non_count)**(-0.2)
 
     sns.kdeplot(distance_isogeny_count, label=['same source'], bw=t1, shade=True, color='r')
 
