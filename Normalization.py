@@ -5,7 +5,8 @@ import numpy as np
 from LoadCSV import LoadCSV
 from CalcFeatureVec import FeatureVec
 
-# 这里要定义一个方法，得到全局的特征向量用于归一化，输入为所有特征向量，最后输出max, min
+# 得到全局的特征向量用于归一化，输入为所有特征向量，最后输出max, min
+'''注意：在计算全局特征矩阵的极值时，两个特征或者一个特征的情况，不能考虑用0代替未填充的矩阵位置的元素'''
 class FeatureOverall(object):
 
     def __init__(self, features):
