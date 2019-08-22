@@ -89,8 +89,15 @@ if __name__ == '__main__':
 
     # 非同源
     distance_non_count=[]
-    # 非同源鞋印两两组合
-    csv_list_different = combine(csv_list_all, 2)
+    # 非同源鞋印区分左右脚
+    csv_different_L = []
+    csv_different_R = []
+    for n in csv_list_all:
+        if 'L' in n:
+            csv_different_L.append(n)
+        else:
+            csv_different_R.append(n)
+    csv_list_different = combine(csv_different_L, 2)+combine(csv_different_R, 2)
     # 从以上结果中要去除同源的左右脚
     [csv_list_different.remove(x) for x in csv_list_same]
     # text_save('F:\\footprint\different source file.txt', csv_list_different)
