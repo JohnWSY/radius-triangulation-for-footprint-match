@@ -1,8 +1,4 @@
 import cv2
-from utils import *
-from LoadCSV import LoadCSV
-from File_processing import *
-import math
 from VertexSort import *
 
 class DrawFeature(object):
@@ -43,10 +39,11 @@ class DrawFeature(object):
         pts2 = [[fv2.x[i], fv2.y[i]] for i in range(len(fv2.x))]
         pts2 = np.array(pts2, dtype = np.int32).reshape(-1, 1, 2)
 
+        # 画出多边形
         cv2.polylines(img1, [pts1], True, thickness=5, color=color_poly, lineType=cv2.LINE_AA)
         cv2.polylines(img2, [pts2], True, thickness=5, color=color_poly, lineType=cv2.LINE_AA)
 
-
+        # 画出中心圆
         cv2.circle(img1, (c1_x, c1_y), 1, color_cen, thickness=50)
         cv2.circle(img2, (c2_x, c2_y), 1, color_cen, thickness=50)
 
@@ -88,7 +85,7 @@ class DrawFeature(object):
     #
     # img_path1 = csv1.replace('.csv', '.jpg')
     # img_path2 = csv2.replace('.csv', '.jpg')
-    # # 同源与非同源皆可以使用
+
     # img = DrawFeature(lc1, lc2)
     # img.draw(img_path1, img_path2)
 

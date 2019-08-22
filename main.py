@@ -20,6 +20,7 @@ if __name__ == '__main__':
     threshold = 1000  # 组合计算阈值
     path = r'../footprint/same source'
 
+
     # 同源
     path_all = glob(path + '\*\*')
     # 所有csv路径
@@ -39,7 +40,6 @@ if __name__ == '__main__':
     result = FeatureOverall(features_isogeny)
     max = result.max
     min = result.min
-
 
     # 遍历所有的组合，计算特征矩阵欧式距离
     for i in range(len(csv_list_same)):
@@ -78,7 +78,6 @@ if __name__ == '__main__':
         # 同源鞋印匹配分数集
         distance_isogeny_count.append(d)
 
-
     print(distance_isogeny_count)
     # 有多少个结果
     print(len(distance_isogeny_count))
@@ -86,8 +85,6 @@ if __name__ == '__main__':
     # 保存数据到txt文件
     # s_s=re.match('.*/', path)
     # text_save(s_s.group()+'same source.txt', distance_isogeny_count)
-
-
 
 
     # 非同源
@@ -156,7 +153,6 @@ if __name__ == '__main__':
                         d_combine.append(d_d)
                 d_combine.sort()
                 d = d_combine[0]
-
 
             elif l_d1 < l_d2:
                 for l in matrix:

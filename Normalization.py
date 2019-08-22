@@ -1,8 +1,6 @@
 from functools import reduce
 from utils import *
-from CalcFeatureVec import FeatureVec
 import numpy as np
-from LoadCSV import LoadCSV
 from CalcFeatureVec import FeatureVec
 
 # 得到全局的特征向量用于归一化，输入为所有特征向量，最后输出max, min

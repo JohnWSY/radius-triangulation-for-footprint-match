@@ -1,6 +1,5 @@
 from glob import glob
 from utils import *
-from CalcFeatureVec import FeatureVec
 from LoadCSV import LoadCSV
 
 # 同源鞋印的特征匹配关系
@@ -14,6 +13,7 @@ class GetCommonPart(object):
         self.y_fv = fv.y_fv[mat_list]
         self.featuredirect = fv.featuredirect[mat_list]
 
+# 调用手动匹配同源鞋印ID的函数
 def feature_vec_same(csv1, csv2):
     '''
     :param csv1: csv文件路径
